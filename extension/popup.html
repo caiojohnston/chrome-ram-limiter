@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Limitador de RAM</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="top">
+    <img src="icons/icon32.png" alt="" width="22" height="22">
+    <h1>Limitador de RAM</h1>
+    <label class="switch" title="Ativar ou desativar">
+      <input type="checkbox" id="enabled">
+      <span class="slider"></span>
+    </label>
+  </header>
+
+  <section class="gauge-card">
+    <svg class="gauge" viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="track" cx="60" cy="60" r="50"></circle>
+      <circle class="value" id="arc" cx="60" cy="60" r="50"></circle>
+    </svg>
+    <div class="gauge-text">
+      <div class="used"><span id="used">—</span><small> GB</small></div>
+      <div class="of" id="of">de — GB</div>
+      <div class="status" id="status"></div>
+    </div>
+    <dl class="facts">
+      <div><dt>Processos</dt><dd id="procs">—</dd></div>
+      <div><dt id="otherLabel">Comprometida</dt><dd id="other">—</dd></div>
+      <div><dt>Windows livre</dt><dd id="sysFree">—</dd></div>
+    </dl>
+  </section>
+
+  <section class="warn" id="hostWarn" hidden>
+    <strong>Medidor não encontrado.</strong>
+    Sem ele a extensão não sabe quanta RAM o Chrome usa. Rode <code>instalar-medidor.ps1</code>
+    na pasta da extensão e reabra este painel. A proteção do Windows continua funcionando.
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <label for="limit">Limite de RAM</label>
+      <output id="limitOut">4 GB</output>
+    </div>
+    <input type="range" id="limit" min="1" max="16" step="0.5">
+    <div class="scale"><span>1 GB</span><span>8 GB</span><span>16 GB</span></div>
+
+    <div class="row toggle">
+      <div>
+        <div class="label">Limite rígido</div>
+        <div class="hint" id="hardHint"></div>
+      </div>
+      <label class="switch"><input type="checkbox" id="hardLimit"><span class="slider"></span></label>
+    </div>
+
+    <div class="row" id="idleRow">
+      <label for="idleMinutes">Suspender abas paradas há</label>
+      <select id="idleMinutes">
+        <option value="2">2 min</option>
+        <option value="5">5 min</option>
+        <option value="10">10 min</option>
+        <option value="15">15 min</option>
+        <option value="30">30 min</option>
+        <option value="60">1 hora</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label for="metric">Medir por</label>
+      <select id="metric">
+        <option value="physical">RAM física (Gerenciador)</option>
+        <option value="commit">Memória comprometida</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row toggle">
+      <div>
+        <div class="label">Proteção do Windows</div>
+        <div class="hint">Libera abas também quando o PC ficar com pouca RAM (ótimo para jogar).</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="sysGuard"><span class="slider"></span></label>
+    </div>
+    <div class="row" id="sysMinRow">
+      <label for="sysMinGB">Manter livre no Windows</label>
+      <span class="num"><input type="number" id="sysMinGB" min="0.5" max="16" step="0.5"> GB</span>
+    </div>
+    <div class="row toggle">
+      <div class="label">Proteger abas fixadas</div>
+      <label class="switch"><input type="checkbox" id="protectPinned"><span class="slider"></span></label>
+    </div>
+    <div class="row toggle">
+      <div class="label">Proteger abas tocando som</div>
+      <label class="switch"><input type="checkbox" id="protectAudible"><span class="slider"></span></label>
+    </div>
+    <label class="block" for="whitelist">Nunca suspender (um site por linha)</label>
+    <textarea id="whitelist" rows="3" placeholder="web.whatsapp.com&#10;mail.google.com"></textarea>
+  </section>
+
+  <button id="freeNow" class="primary">Liberar memória agora</button>
+  <p class="sub" id="eligible"></p>
+
+  <footer>
+    <span id="today">Hoje: 0 abas suspensas</span>
+    <span id="last"></span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

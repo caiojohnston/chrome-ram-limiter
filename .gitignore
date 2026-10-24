@@ -1,0 +1,9 @@
+# Chave privada da extensão: nunca publicar
+*.pem
+
+# Gerados por instalar-medidor.ps1 (contêm caminhos da máquina)
+host/host.bat
+host/com.ramlimiter.host.json
+
+__pycache__/
+*.pyc
