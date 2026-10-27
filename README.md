@@ -8,12 +8,13 @@ Abas suspensas continuam na barra e recarregam quando você clica nelas.
 
 - **`extension/`**: a extensão (painel, limite, suspensão automática a cada 30 s).
 - **`host/`**: o medidor. Extensões do Chrome não conseguem ver quanta RAM o Chrome usa, então um
-  script Python pequeno lê isso do Windows (mesmo número da coluna "Memória" do Gerenciador de Tarefas)
-  e entrega para a extensão via *native messaging*.
+  programinha em C# (`host.cs`, sem janela) lê isso do Windows (mesmo número da coluna "Memória" do
+  Gerenciador de Tarefas) e entrega para a extensão via *native messaging*, numa conexão única.
 
 ## Requisitos
 
-Windows 10/11, Google Chrome 121 ou mais novo e Python 3 instalado (só o medidor usa, sem bibliotecas extras).
+Windows 10/11 e Google Chrome 121 ou mais novo. Nada mais para instalar: o medidor é compilado na hora
+com o compilador C# que já vem no Windows.
 
 ## Instalação
 

@@ -2,8 +2,5 @@
 *.pem
 
 # Gerados por instalar-medidor.ps1 (contêm caminhos da máquina)
-host/host.bat
+host/ramlimiter-host.exe
 host/com.ramlimiter.host.json
-
-__pycache__/
-*.pyc

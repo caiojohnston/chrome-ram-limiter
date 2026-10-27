@@ -48,13 +48,59 @@ async function saveSettings(patch) {
 
 // ---------- medicao ----------
 
-async function readHost() {
+// Uma unica conexao com o medidor, reaproveitada em todas as leituras (nao cria processo a cada medicao).
+let port = null;
+let waiting = null;
+let readQueue = Promise.resolve();
+
+function connectHost() {
   try {
-    const res = await chrome.runtime.sendNativeMessage(HOST, { cmd: 'mem' });
-    return res && res.ok ? res : null;
+    port = chrome.runtime.connectNative(HOST);
+    port.onMessage.addListener((msg) => {
+      const done = waiting;
+      waiting = null;
+      done?.(msg);
+    });
+    port.onDisconnect.addListener(() => {
+      void chrome.runtime.lastError; // evita aviso no console quando o medidor nao esta instalado
+      port = null;
+      const done = waiting;
+      waiting = null;
+      done?.(null);
+    });
   } catch {
-    return null;
+    port = null;
   }
+}
+
+function askHost() {
+  if (!port) connectHost();
+  if (!port) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => {
+      waiting = null;
+      resolve(null);
+    }, 3000);
+    waiting = (msg) => {
+      clearTimeout(timer);
+      resolve(msg && msg.ok ? msg : null);
+    };
+    try {
+      port.postMessage({ cmd: 'mem' });
+    } catch {
+      clearTimeout(timer);
+      waiting = null;
+      port = null;
+      resolve(null);
+    }
+  });
+}
+
+// Leituras em fila: o popup e o ciclo automatico podem pedir ao mesmo tempo.
+function readHost() {
+  const result = readQueue.then(askHost);
+  readQueue = result.catch(() => null);
+  return result;
 }
 
 async function measure() {
