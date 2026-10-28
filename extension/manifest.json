@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Chrome RAM Limiter for Chrome",
+  "name": "RAM Limiter for Chrome",
   "version": "1.1.0",
   "description": "Limita a memória usada pelo Chrome: suspende abas em segundo plano quando o limite que você definiu for ultrapassado.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtXG4ESFAz1TWHnQ35gg87T2JCrECrqeKs0xUwHIZLE1FLEEAKDHZpLAiLlWw2mUReHcZVTX8ksIlYJJjgWN9t0GBAsa6uFiZapfilJtGjlRR+SACmFkF8rnFYg/AOOGPHDEOkO3BISbWDygU1PT2k8sB8h6LFe2tDMy7y6KhMH+XMXZ0xR2I3v1uybIDbZGidqhQUdU1F0PWELmlz8YCnB9ah4iayxdDl/soTs3bHUz7ETLrpkSc7NwMXV4LFI/94cebUKTe1OfkoSQGkkgQYMYGi6MyjZD8/EyqnMoCMFx4nUftb/pPgWbGm9f6OGGfkzY+Vi6KSOozdzAYdQvRiQIDAQAB",
@@ -12,7 +12,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Chrome RAM Limiter for Chrome",
+    "default_title": "RAM Limiter for Chrome",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png",

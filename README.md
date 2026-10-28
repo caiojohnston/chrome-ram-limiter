@@ -1,4 +1,4 @@
-# Chrome RAM Limiter for Chrome
+# RAM Limiter for Chrome
 
 Extensão que limita a memória usada pelo Chrome: quando ele passa do limite que você definiu,
 ela suspende abas em segundo plano (as mais antigas primeiro) até voltar para baixo do limite.

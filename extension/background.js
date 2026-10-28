@@ -194,7 +194,7 @@ const fmtGB = (mb) => (mb / 1024).toLocaleString('pt-BR', { maximumFractionDigit
 async function updateBadge(cfg, r) {
   let text = '';
   let color = '#5f6368';
-  let title = 'Chrome RAM Limiter for Chrome';
+  let title = 'RAM Limiter for Chrome';
   if (!cfg.enabled) {
     text = 'OFF';
     title += ' — desativado';
