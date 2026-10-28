@@ -1,7 +1,8 @@
-# Limitador de RAM para Chrome
+# Chrome RAM Limiter for Chrome
 
-Extensão que limita a RAM do Chrome como o limitador do Opera GX: quando o Chrome passa do limite,
+Extensão que limita a memória usada pelo Chrome: quando ele passa do limite que você definiu,
 ela suspende abas em segundo plano (as mais antigas primeiro) até voltar para baixo do limite.
+O painel segue o visual das configurações do Chrome, com tema claro e escuro automáticos.
 Abas suspensas continuam na barra e recarregam quando você clica nelas.
 
 ## Como funciona

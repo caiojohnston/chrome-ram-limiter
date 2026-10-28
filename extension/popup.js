@@ -1,5 +1,4 @@
 const $ = (id) => document.getElementById(id);
-const ARC_LEN = 2 * Math.PI * 50 * 0.75;
 const send = (msg) => chrome.runtime.sendMessage(msg);
 
 const gb = (mb, digits = 1) =>
@@ -10,9 +9,15 @@ const time = (ts) => new Date(ts).toLocaleTimeString('pt-BR', { hour: '2-digit',
 let cfg = null;
 let busy = false;
 
+function paintSlider() {
+  const s = $('limit');
+  s.style.setProperty('--p', `${((s.value - s.min) / (s.max - s.min)) * 100}%`);
+}
+
 function renderSettings() {
   $('enabled').checked = cfg.enabled;
   $('limit').value = cfg.limitGB;
+  paintSlider();
   $('limitOut').textContent = `${gbLimit(cfg.limitGB)} GB`;
   $('hardLimit').checked = cfg.hardLimit;
   $('idleMinutes').value = String(cfg.idleMinutes);
@@ -46,21 +51,19 @@ function renderReading(reading, stats, eligible) {
   $('other').textContent = reading.hostOk ? `${gb(physical ? reading.commitMB : reading.physicalMB)} GB` : '—';
   $('sysFree').textContent = `${gb(reading.sysFreeMB)} GB`;
 
-  const arc = $('arc');
+  const card = $('usageCard');
   const status = $('status');
   if (used == null) {
     $('used').textContent = '—';
-    arc.style.strokeDasharray = `0 999`;
+    $('fill').style.width = '0';
+    card.dataset.state = 'ok';
     status.textContent = '';
   } else {
     const ratio = used / limitMB;
-    const color = ratio >= 1 ? 'var(--danger)' : ratio >= 0.8 ? 'var(--warn)' : 'var(--ok)';
     $('used').textContent = gb(used);
-    arc.style.strokeDasharray = `${ARC_LEN * Math.min(ratio, 1)} 999`;
-    arc.style.stroke = color;
-    arc.style.color = color;
-    status.style.color = color;
-    status.textContent = !cfg.enabled ? 'desativado' : ratio >= 1 ? 'acima do limite' : ratio >= 0.8 ? 'perto do limite' : 'tudo certo';
+    $('fill').style.width = `${Math.min(ratio, 1) * 100}%`;
+    card.dataset.state = ratio >= 1 ? 'danger' : ratio >= 0.8 ? 'warn' : 'ok';
+    status.textContent = !cfg.enabled ? 'Desativado' : ratio >= 1 ? 'Acima do limite' : ratio >= 0.8 ? 'Perto do limite' : 'Dentro do limite';
   }
 
   $('eligible').textContent = eligible
@@ -104,6 +107,7 @@ function bindSwitch(id) {
 ['enabled', 'hardLimit', 'sysGuard', 'protectPinned', 'protectAudible'].forEach(bindSwitch);
 
 $('limit').addEventListener('input', (e) => {
+  paintSlider();
   $('limitOut').textContent = `${gbLimit(Number(e.target.value))} GB`;
 });
 $('limit').addEventListener('change', (e) => save({ limitGB: Number(e.target.value) }));

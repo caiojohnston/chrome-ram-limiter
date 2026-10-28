@@ -2,29 +2,33 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <title>Limitador de RAM</title>
+  <title>Chrome RAM Limiter for Chrome</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <header class="top">
-    <img src="icons/icon32.png" alt="" width="22" height="22">
-    <h1>Limitador de RAM</h1>
+    <img src="icons/icon32.png" alt="" width="24" height="24">
+    <h1>Chrome RAM Limiter for Chrome</h1>
     <label class="switch" title="Ativar ou desativar">
-      <input type="checkbox" id="enabled">
-      <span class="slider"></span>
+      <input type="checkbox" id="enabled" aria-label="Ativar o limitador">
+      <span class="track"></span>
     </label>
   </header>
 
-  <section class="gauge-card">
-    <svg class="gauge" viewBox="0 0 120 120" aria-hidden="true">
-      <circle class="track" cx="60" cy="60" r="50"></circle>
-      <circle class="value" id="arc" cx="60" cy="60" r="50"></circle>
-    </svg>
-    <div class="gauge-text">
-      <div class="used"><span id="used">—</span><small> GB</small></div>
+  <section class="warn" id="hostWarn" hidden>
+    <strong>Medidor não encontrado.</strong>
+    Sem ele a extensão não sabe quanta RAM o Chrome usa. Execute <code>instalar-medidor.ps1</code>
+    na pasta da extensão e reabra este painel. A proteção do Windows continua funcionando.
+  </section>
+
+  <h2>Uso de memória</h2>
+  <section class="card usage" id="usageCard" data-state="ok">
+    <div class="usage-head">
+      <div class="big"><span id="used">—</span><small> GB</small></div>
       <div class="of" id="of">de — GB</div>
-      <div class="status" id="status"></div>
+      <span class="chip" id="status"></span>
     </div>
+    <div class="bar" role="progressbar" aria-label="Uso de memória do Chrome"><div class="fill" id="fill"></div></div>
     <dl class="facts">
       <div><dt>Processos</dt><dd id="procs">—</dd></div>
       <div><dt id="otherLabel">Comprometida</dt><dd id="other">—</dd></div>
@@ -32,71 +36,72 @@
     </dl>
   </section>
 
-  <section class="warn" id="hostWarn" hidden>
-    <strong>Medidor não encontrado.</strong>
-    Sem ele a extensão não sabe quanta RAM o Chrome usa. Rode <code>instalar-medidor.ps1</code>
-    na pasta da extensão e reabra este painel. A proteção do Windows continua funcionando.
-  </section>
-
+  <h2>Limite do Chrome</h2>
   <section class="card">
-    <div class="row">
-      <label for="limit">Limite de RAM</label>
-      <output id="limitOut">4 GB</output>
+    <div class="item slider-item">
+      <div class="item-main">
+        <label class="title" for="limit">Limite de memória</label>
+        <output id="limitOut">4 GB</output>
+      </div>
+      <input type="range" id="limit" min="1" max="16" step="0.5">
+      <div class="scale"><span>1 GB</span><span>8 GB</span><span>16 GB</span></div>
     </div>
-    <input type="range" id="limit" min="1" max="16" step="0.5">
-    <div class="scale"><span>1 GB</span><span>8 GB</span><span>16 GB</span></div>
 
-    <div class="row toggle">
-      <div>
-        <div class="label">Limite rígido</div>
+    <div class="item">
+      <div class="item-main">
+        <div class="title">Limite rígido</div>
         <div class="hint" id="hardHint"></div>
       </div>
-      <label class="switch"><input type="checkbox" id="hardLimit"><span class="slider"></span></label>
+      <label class="switch"><input type="checkbox" id="hardLimit" aria-label="Limite rígido"><span class="track"></span></label>
     </div>
 
-    <div class="row" id="idleRow">
-      <label for="idleMinutes">Suspender abas paradas há</label>
+    <div class="item" id="idleRow">
+      <label class="title" for="idleMinutes">Suspender abas paradas há</label>
       <select id="idleMinutes">
-        <option value="2">2 min</option>
-        <option value="5">5 min</option>
-        <option value="10">10 min</option>
-        <option value="15">15 min</option>
-        <option value="30">30 min</option>
+        <option value="2">2 minutos</option>
+        <option value="5">5 minutos</option>
+        <option value="10">10 minutos</option>
+        <option value="15">15 minutos</option>
+        <option value="30">30 minutos</option>
         <option value="60">1 hora</option>
       </select>
     </div>
 
-    <div class="row">
-      <label for="metric">Medir por</label>
+    <div class="item">
+      <label class="title" for="metric">Medir por</label>
       <select id="metric">
-        <option value="physical">RAM física (Gerenciador)</option>
-        <option value="commit">Memória comprometida</option>
+        <option value="physical">RAM física</option>
+        <option value="commit">Comprometida</option>
       </select>
     </div>
   </section>
 
+  <h2>Proteções</h2>
   <section class="card">
-    <div class="row toggle">
-      <div>
-        <div class="label">Proteção do Windows</div>
-        <div class="hint">Libera abas também quando o PC ficar com pouca RAM (ótimo para jogar).</div>
+    <div class="item">
+      <div class="item-main">
+        <div class="title">Proteção do Windows</div>
+        <div class="hint">Libera abas também quando o computador ficar com pouca RAM.</div>
       </div>
-      <label class="switch"><input type="checkbox" id="sysGuard"><span class="slider"></span></label>
+      <label class="switch"><input type="checkbox" id="sysGuard" aria-label="Proteção do Windows"><span class="track"></span></label>
     </div>
-    <div class="row" id="sysMinRow">
-      <label for="sysMinGB">Manter livre no Windows</label>
-      <span class="num"><input type="number" id="sysMinGB" min="0.5" max="16" step="0.5"> GB</span>
+    <div class="item" id="sysMinRow">
+      <label class="title" for="sysMinGB">Manter livre no Windows</label>
+      <span class="num"><input type="number" id="sysMinGB" min="0.5" max="16" step="0.5"><span>GB</span></span>
     </div>
-    <div class="row toggle">
-      <div class="label">Proteger abas fixadas</div>
-      <label class="switch"><input type="checkbox" id="protectPinned"><span class="slider"></span></label>
+    <div class="item">
+      <div class="title">Proteger abas fixadas</div>
+      <label class="switch"><input type="checkbox" id="protectPinned" aria-label="Proteger abas fixadas"><span class="track"></span></label>
     </div>
-    <div class="row toggle">
-      <div class="label">Proteger abas tocando som</div>
-      <label class="switch"><input type="checkbox" id="protectAudible"><span class="slider"></span></label>
+    <div class="item">
+      <div class="title">Proteger abas tocando som</div>
+      <label class="switch"><input type="checkbox" id="protectAudible" aria-label="Proteger abas tocando som"><span class="track"></span></label>
     </div>
-    <label class="block" for="whitelist">Nunca suspender (um site por linha)</label>
-    <textarea id="whitelist" rows="3" placeholder="web.whatsapp.com&#10;mail.google.com"></textarea>
+    <div class="item column">
+      <label class="title" for="whitelist">Manter estes sites sempre ativos</label>
+      <textarea id="whitelist" rows="3" placeholder="web.whatsapp.com&#10;mail.google.com"></textarea>
+      <div class="hint">Um site por linha.</div>
+    </div>
   </section>
 
   <button id="freeNow" class="primary">Liberar memória agora</button>

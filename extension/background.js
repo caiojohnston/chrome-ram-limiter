@@ -193,20 +193,20 @@ const fmtGB = (mb) => (mb / 1024).toLocaleString('pt-BR', { maximumFractionDigit
 
 async function updateBadge(cfg, r) {
   let text = '';
-  let color = '#5b5563';
-  let title = 'Limitador de RAM';
+  let color = '#5f6368';
+  let title = 'Chrome RAM Limiter for Chrome';
   if (!cfg.enabled) {
     text = 'OFF';
     title += ' — desativado';
   } else if (!r.hostOk) {
     text = '!';
-    color = '#d98e04';
+    color = '#f29900';
     title += ' — medidor não instalado';
   } else {
     const used = usedMB(cfg, r);
     const ratio = used / (cfg.limitGB * 1024);
     text = used >= 10240 ? String(Math.round(used / 1024)) : fmtGB(used);
-    color = ratio >= 1 ? '#e5243f' : ratio >= 0.8 ? '#d98e04' : '#1f9d55';
+    color = ratio >= 1 ? '#d93025' : ratio >= 0.8 ? '#f29900' : '#1e8e3e';
     title += ` — Chrome: ${fmtGB(used)} GB de ${cfg.limitGB} GB`;
   }
   await chrome.action.setBadgeText({ text });
